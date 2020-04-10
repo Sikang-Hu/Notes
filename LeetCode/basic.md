@@ -96,11 +96,18 @@ private void backTrack(int[] nums, List<Integer> track, int first) {
     }
 ```
 
-## Backspace String Compare
-
-Q884
+## Q884 Backspace String Compare
 
 For this problem, we can first know that future backspace will delete character that has been 
 seen, so we cannot decide which character is in the finally string. Since the string is immutable we cannot swap the char to get the finally string.
 
 However, the key trick is that if we go **reversely**, every time there is a backspace, we can skip the next non-backspace character. So every character left must be in the fianlly String.
+
+
+## Q48 Rotate Image
+* **Clockwise**: transpose and then reverse each row
+* **Anticlockwise**: transpose and then reverse each column
+
+## Q155 Min Stack
+
+It is pretty important to the find the invariants when solving problem. For a stack after a element <mark>x</mark> being inserted, the part below it will never change as long as th
