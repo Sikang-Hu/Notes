@@ -77,3 +77,30 @@ class Solution {
 
 Note: for the problem above, sorting ahead helps pruning the tree, i.e. when target is less than a candidates, it can break from the iteration directly.
 
+A key point for backtrack is that: you need to **restore the state** before trying the next extension. For example, remove the last step from the track; restore the candidates to the state before recursion: 
+
+```java
+// Q46 Permutation Snippet
+private void backTrack(int[] nums, List<Integer> track, int first) {
+        if (first == nums.length) result.add(new ArrayList<>(track));
+        
+        for (int i = first; i < nums.length; i++) {
+            track.add(nums[i]);
+            swap(nums, first, i);
+            backTrack(nums, track, first + 1);
+            // must perform completed restore, otherwise the candidate nums will
+            // be mess up
+            swap(nums, first, i);
+            track.remove(track.size() - 1);
+        }
+    }
+```
+
+## Backspace String Compare
+
+Q884
+
+For this problem, we can first know that future backspace will delete character that has been 
+seen, so we cannot decide which character is in the finally string. Since the string is immutable we cannot swap the char to get the finally string.
+
+However, the key trick is that if we go **reversely**, every time there is a backspace, we can skip the next non-backspace character. So every character left must be in the fianlly String.
