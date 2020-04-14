@@ -110,4 +110,11 @@ However, the key trick is that if we go **reversely**, every time there is a bac
 
 ## Q155 Min Stack
 
-It is pretty important to the find the invariants when solving problem. For a stack after a element <mark>x</mark> being inserted, the part below it will never change as long as th
+It is pretty important to the find the invariants when solving problem. For a stack after a element *x* being inserted, the part below it will never change as long as *x* remains in the stack. 
+
+Having observed that, we can record the minimum value so far along with each element, then we can always learn the minimum of the stack by definition of the value stored with the actual data.
+
+## Q62 Unique Path
+
+While this problem can be down by dynamic programming, it is actually a combinatorial problem: pick h going downs from h+v steps(h = m - 1, v = n - 1).
+
