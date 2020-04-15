@@ -118,3 +118,87 @@ Having observed that, we can record the minimum value so far along with each ele
 
 While this problem can be down by dynamic programming, it is actually a combinatorial problem: pick h going downs from h+v steps(h = m - 1, v = n - 1).
 
+## Negative Modulos in Java
+
+In Java, modulus and reminders are different. Modulus are always positive, while the reminders can be negative. And in Java, the binary operator `%` are defined to produce a result such that `(a / b) * b + (a % b) is equal to a`. `abs((a / b) * b)` must be less that a, so in the case `a` is negative, the result of `%` will be negative.
+
+To get the modulus, there are two cases: 
+
+  1. If `a > 0`, modulus equals to reminder `a % b`
+  2. If `a < 0`, modulus equals to `(a % b) + abs(b)`
+
+## Q94 Inorder Traversal
+
+The most straightforward method is recursion. We can also mimic the call stack with a actual stack, to avoid recursion:
+
+```java
+
+public List<Integer> inorder(TreeNode root) {
+    List<Integer> l = new ArrayList<>();
+    Stack<TreeNode> s = new Stack<>();
+    TreeNode curr = root;
+    while (!s.empty() || curr != null) {
+        while (curr != null) {
+            s.push(curr);
+            curr = curr.left;
+        }
+        curr = s.pop();
+        l.add(curr.val);
+        curr = curr.right;
+    }
+}
+```
+
+The detail for this implementation is pretty important. That is when to pop and push the stack, and how to move the pointer. Every outer while loop can be regarded as a function call(exclude the right subtree). If curr is null, this call will just return, and if there is nothing in the call stack, the traversal just terminate. If there is a node in the stack, meaning we reach the leftmost, we can do something for current node, and begin to traversal the right subtree. 
+
+Another approach is **Morris Traversal**:
+
+### Morris Traversal:
+
+Threaded Binary Tree can be traversed without **extra space**.
+
+#### Definition
+> "A binary tree is threaded by making all **right** child pointers that would normally be null point to the in-order **successor** of the node (if it exists), and all **left** child pointers that would normally be null point to the in-order **predecessor** of the node."
+
+#### Strategy
+
+If current node has no left child, 
+
+  1. Do something for its data
+  2. Go to its right child
+
+Else,
+
+  1. Look at its left subtree, its rightmost node will be the predecessor of current node. (Threading)
+  2. Go to the left child.
+
+#### Implementation
+
+```java
+public List<Integer> inorder(TreeNode root) {
+    TreeNode curr = root;
+    List<Integer> re = new ArrayList<>();
+    TreeNode re;
+    while (curr != null) {
+        if (curr.left == null) {
+            re.add(curr.val);
+            curr = curr.right;
+        } else {
+            pre = curr.left;
+            while (pre.right != null) {
+                pre = pre.right;
+            }
+            pre.right = curr;
+            curr = curr.left;
+            pre.right.left = null; // This is essential, it actually move the left subtree to the top, which prevents cycle.
+        }
+    }
+    return re;
+}
+```
+
+####  Complexity
+
+For this implementation, the time complexity is actually `O(n)`. The reason is a binary tree with `n` nodes has `n - 1` edges. During the whole process, each eage will be touched at most twice: 1. locate the node downside; 2. Find the predecessor(rightmost node of left subtree). 
+
+To prove the second reason, we can think this way: after been used for find predecessor, the left subtree `curr.left` will be the new top of the binary tree, `curr` will be put below the rightmost node. In the later process, the edges between `curr` and `curr.left` will never be used for find predecessor, since they have no chance to in the left subtree of any new root. 
