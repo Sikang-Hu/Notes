@@ -202,3 +202,220 @@ public List<Integer> inorder(TreeNode root) {
 For this implementation, the time complexity is actually `O(n)`. The reason is a binary tree with `n` nodes has `n - 1` edges. During the whole process, each eage will be touched at most twice: 1. locate the node downside; 2. Find the predecessor(rightmost node of left subtree). 
 
 To prove the second reason, we can think this way: after been used for find predecessor, the left subtree `curr.left` will be the new top of the binary tree, `curr` will be put below the rightmost node. In the later process, the edges between `curr` and `curr.left` will never be used for find predecessor, since they have no chance to in the left subtree of any new root. 
+
+## Q102 Symmetric Tree
+
+## Key Point
+A tree is symmetric if its left subtree is mirror symmetric to its right subtree. Obviously, it should be mirror symetric to itself.
+
+Hence, we can solve this problem using recursively, compare the key of two trees, and one's left subtree to the other's right subtree and one's right to the other's left.
+
+This problem can also be solved iteratively with a queue and tuning the order of offering node.
+
+```java
+public boolean symmetric(TreeNode root) {
+    Queue<TreeNode> q = new LinkedList<>();
+    q.offer(root);
+    q.offer(root);
+
+    TreeNode t1;
+    TreeNode t2;
+    while(!q.empty()) {
+        t1 = q.poll();
+        t2 = q.poll();
+        if (t1 == null && t2 == null) continue;
+        if (t1 == null || t2 == null || t1.val != t2.val) return false;
+
+        // The order are important, it guarantees that you actually poll()
+        // two node should be compared(to be symetric).
+        q.offer(t1.left);
+        q.offer(t2.right);
+        q.offer(t1.right);
+        q.offer(t2.left);
+    }
+    return true;
+}
+```
+
+
+## Q105 Construct Binary Tree from Preorder and Inorder Traversal
+
+### Iterative Implementation
+```java
+public TreeNode buildTree(int[] preorder, int[] inorder) {
+    if (preorder == null || inorder == null || preorder.length == 0 || preorder.length != inorder.length) return null;
+    Deque<TreeNode> s = new LinkedList<>();
+    int i = 0;
+    TreeNode root = new TreeNode(preorder[0]);
+    s.push(root);
+    TreeNode cur;
+    for (int j = 1; j < preorder.length; j++) {
+        cur = s.peek();
+        if (cur.val != inorder[i]) {
+            cur.left = new TreeNode(preorder[j]);
+            cur = cur.left;
+            s.push(cur);
+        }
+        else {
+            while (!s.isEmpty() && inorder[i] == s.peek().val) {
+                cur = s.pop();
+                i++;
+            }
+            cur.right = new TreeNode(preorder[j]);
+            cur = cur.right;
+            s.push(cur);
+        }
+    }
+    return root;
+}
+```
+
+## Q1008 Construct Binary Search Tree from Preorder Traversal
+
+Similar to the problem above, this is another problem to construct Binary Tree. It can be reduced to previous problem, which takes `O(n^2)` at worst, or `O(nlogn)` for a balance tree. (Sort the preorder to get inorder then it can be guaranteed to be `O(nlogn)` with HashMap).
+
+```java
+ public TreeNode bstFromPreorder(int[] preorder) {
+    return help(preorder, 0, preorder.length - 1);
+}
+    
+private TreeNode help(int[] pre, int left, int right) {
+    if (left > right) return null;
+    if (left == right) return new TreeNode(pre[left]);
+    
+    TreeNode re = new TreeNode(pre[left]);
+    int i = left;
+    while (i <= right) {
+        if (pre[i] > pre[left]) break;
+        i++;
+    }
+    re.left = help(pre, left + 1, i - 1);
+    re.right = help(pre, i, right);
+    return re;
+}
+```
+
+However, there are still faster solution that only takes `O(n)`. The basic idea is to imitate how preorder traverse the tree. Given the preorder array, if you iterate through the array, you are actually traverse the underlying tree in preorder. Hence, at `preorder[i]`, you can first constuct the TreeNode, then construct the left and right node recursively. And `preorder[i]` is not only the value of current node, but also a **seperate** for its left subtree can right subtree int later array.
+
+For example, `[8, 5, 1, 7, 10, 12]`, when you are at the first node, you don't need to find the next larger value 10 explicitly (like implementation above), you just tell the left subtree it should never go beyond 8. Then, only element before 10 will be used to construct left subtree.
+
+Note: Using a global variable can help us to locate in the array.
+
+```java
+class Solution {
+    int idx;
+    public TreeNode bstFromPreorder(int[] preorder) {
+        this.idx = 0;
+        return help(preorder, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+    
+    private TreeNode help(int[] pre, int low, int high) {
+        if (this.idx == pre.length) return null;
+        int val = pre[this.idx];
+        
+        if (val < low || val > high) return null;
+        
+        TreeNode re = new TreeNode(val);
+        this.idx++;
+        re.left = help(pre, low, val);
+        re.right = help(pre, val, high);
+        return re;
+    }
+}
+```
+
+### Iterative Impelementation 
+
+Use stack to convert recursion into iteration. The stack containing nodes are similar to the call stack in resursion. When finished construct left subtree, we will push another call into the stack. And we can intimate that explicitly in stack: when the next value is larger than a node's val but less than its parent's, we know that the next value must be the right child of this node. 
+
+```java
+public TreeNode bstFromPreorder(int[] preorder) {
+        if (preorder.length == 0) return null;
+        TreeNode root = new TreeNode(preorder[0]);
+        Deque<TreeNode> s = new ArrayDeque<>();
+        s.push(root);
+
+        TreeNode parent;
+        for (int i = 1; i < preorder.length; i++) {
+            parent = s.peek();
+            while(!s.empty() && parent.val < preorder[i]) parent = s.pop();
+
+            TreeNode child = new TreeNode(preorder[i]);
+            if (parent.val < child.val) parent.right = child;
+            else parent.left = child;
+            s.push(parent.right);
+        }
+    }
+```
+
+## Q146 LRU Cache
+
+
+Change `Node` from the inner class to outer class, the runtime change from 29ms to 13 ms.
+
+## Q152 Maximum Product Subarray
+
+The key idea for this problem is that if there is no zero, the maximum product either start with the first element or the last element or both. That is to say, the result should never be a inner subrray of the original one.
+
+### Proof
+
+Suppose there is such a subarray, if its product is negative, if its left side or right side is negative, it can always expend one more element to get a positive result. If both the left and right are positive, it can just disregard this subarray, to pick the bigger positive number.
+
+If the subarray is positive. If its left or right is positive, it can always expand one more element to get a larger product. If both left and right are negative, it can expand in two side to get a larger product.
+
+Therefore, in whatever case, it can always expand to the start or the end. 
+
+However, what if there are zeros. The answer is to split the array, every time we have a zero, we split at this point and start from the next number. The reason is the result will never span across arrays split by 0. (If we have a zero, we still regard it as a candidate for the final result)
+
+### Implementation
+
+```java
+public int maxProduct(int[] nums) {
+    if (nums.length == 0) return 0;
+    int re = nums[0];
+    int l = 0;
+    int r = 0;
+    for (int i = 0; i < nums.length; i++) {
+        // prefix array
+        l = (l ? l : 1) * nums[i];
+        // subffix array
+        r = (r ? r : 1) * nums[nums.length - 1 - i];
+        // We will still consider 0
+        re = Math.max(re, Math.max(l ,r));
+    }
+    return re;
+}
+```
+
+## Q206 Reverse Single LinkedList
+
+Iterative version is obvious, but the idea behind recursive solution is interesting.
+
+### Normal Recursion
+
+```java
+public ListNode reverseList(ListNode head) {
+    if (head == null || head.next == null) return head;
+    ListNode temp = reverseList(head.next);
+    head.next.next = head;
+    head.next = null;
+    return temp;
+}
+```
+
+The basic idea for this implementation is the reverse of current list is to put the head after the reverse of the list after the head. However, the tricky part is how can you get the tail of the reverse of list after head. We can know that the tail is just the node after head, and its reference is still kept by head. So, we can just leverage it to finish the task.
+
+### Tail Recursion
+
+```java
+public ListNode reverseList(ListNode head) {
+    return reverseList(head, null);
+}
+
+public ListNode help(ListNode head, ListNode re) {
+    if (head == null) return re;
+    ListNode temp = head.next;
+    head.next = re;
+    return help(temp, head);
+}
+```
