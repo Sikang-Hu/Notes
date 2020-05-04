@@ -149,7 +149,7 @@ public List<Integer> inorder(TreeNode root) {
 }
 ```
 
-The detail for this implementation is pretty important. That is when to pop and push the stack, and how to move the pointer. Every outer while loop can be regarded as a function call(exclude the right subtree). If curr is null, this call will just return, and if there is nothing in the call stack, the traversal just terminate. If there is a node in the stack, meaning we reach the leftmost, we can do something for current node, and begin to traversal the right subtree. 
+The detail for this implementation is pretty important. That is when to pop and push the stack, and how to move the pointer. Every outer while loop can be regarded as a function call(exclude the right subtree). If curr is null, this call will just return, and if there is nothing in the call stack, the traversal just terminate. If there is a node in the stack, meaning we return from left side call, we can do something for current node, and begin to traversal the right subtree. 
 
 Another approach is **Morris Traversal**:
 
@@ -419,3 +419,11 @@ public ListNode help(ListNode head, ListNode re) {
     return help(temp, head);
 }
 ```
+
+## Q295 Find Median from Data Stream
+
+The key of this problem is to main two heaps.
+
+## Q300 Longest Increasing Subsequence
+
+Patience sort

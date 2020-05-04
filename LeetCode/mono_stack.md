@@ -56,3 +56,37 @@ public int largestRectangleArea(int[] heights) {
 
 ### Q85 Maximal Rectangle
 
+## Monotonic Queue
+
+### Q239 Sliding Window Maximum
+
+The key idea is that, suppose we maintain a deque for only elements in the window. If we slide the window, all the elements in the queue that are less than the next element will never be the maximum in later windows, so we can just disregard it.
+
+Another key point is maintain the index instead of the actual number so that we can locate the element, to remove elements that are not in the window.
+
+```java
+public int[] maxSlidingWindow(int[] nums, int k) {
+    ArrayDeque<Integer> dq = new ArrayDeque<>();
+    int[] re = new int[nums.length - k + 1];
+    dq.add(0);
+    for (int i = 1; i < k; i++) {
+        while (!dq.isEmpty() && nums[dq.getLast()] < nums[i]) dq.removeLast();
+        dq.addLast(i);
+    }
+    re[0] = nums[dq.peekFirst()];
+    
+    for (int i = k ; i < nums.length; i++) {
+        if (dq.peekFirst() == i - k) {
+            dq.removeFirst();
+        }
+        while (!dq.isEmpty() && nums[dq.getLast()] < nums[i]) dq.removeLast();
+        dq.addLast(i);
+        re[i - k + 1] = nums[dq.getFirst()];
+    }
+    return re;
+}
+```
+
+This problem can also solved by dynamic programming. Divide the array into segemnts of size k.
+
+
