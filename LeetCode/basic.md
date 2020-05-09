@@ -427,3 +427,7 @@ The key of this problem is to main two heaps.
 ## Q300 Longest Increasing Subsequence
 
 Patience sort
+
+## Q348 Design Tic-Tac-Toe
+
+
