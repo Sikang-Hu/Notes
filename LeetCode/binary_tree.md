@@ -15,6 +15,7 @@ To traverse a binary tree iteratively, we always need a stack. Here are the step
 public void inorder(TreeNode root) {
     Deque<Integer> stack = new ArrayDeque<>();
     TreeNode curr = root;
+    // This condition is pretty important, if missing the first condition, it will not traverse the right subtree of the root
     while (curr != null || !stack.isEmpty()) {
         while (curr != null) {
             stack.add(curr);

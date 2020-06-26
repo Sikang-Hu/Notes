@@ -120,7 +120,7 @@ While this problem can be down by dynamic programming, it is actually a combinat
 
 ## Negative Modulos in Java
 
-In Java, modulus and reminders are different. Modulus are always positive, while the reminders can be negative. And in Java, the binary operator `%` are defined to produce a result such that `(a / b) * b + (a % b) is equal to a`. `abs((a / b) * b)` must be less that a, so in the case `a` is negative, the result of `%` will be negative.
+In Java, modulus and reminders are different. Modulus are always positive, while the reminders can be negative. And in Java, the binary operator `%` are defined to produce a result such that `(a / b) * b + (a % b) is equal to a`. `abs((a / b) * b)` must be less that `abs(a)`, so in the case `a` is negative, the result of `%` will be negative.
 
 To get the modulus, there are two cases: 
 
@@ -429,5 +429,61 @@ The key of this problem is to main two heaps.
 Patience sort
 
 ## Q348 Design Tic-Tac-Toe
+
+## Q50 Fast Power Algorithm
+
+1. Binary Decomposition
+   
+   Any integer can be represented in binary, e.g: \
+$10 = 1010_{2}$, $15 = 1111_{2}$ \
+To calculate `power(a, x)`, we can also convert the `x` into binary, and it can be decomposed as: $x = \sum b_{i} \cdot 2^{i}$. Hence, $a^{x} = \prod a^{b_{i} \cdot 2^{i}}$. Take $3^{10}$ as an example: \
+$3^{10} = 3^{1010_{2}} = 3^{0 \cdot 2^{0}} \cdot 3^{1 \cdot 2^{1}} \cdot 3^{0 \cdot 2^{2}} \cdot 3^{1 \cdot 2^{3}}$ \
+And we have $a^{2^{i + 1}} = a^{2^{i}} \cdot a^{2^{i}}$. So we can keep calculate $a^{2^{i}}$, and include the result if $b_{i} = 1$.
+
+    ```java
+    public double power(double x, int n) {
+
+        // convert n to long cause - Integer.MIN_VALUE will overflow.
+        long k = n;
+        if (k < 0) {
+            k = -k;
+            x = 1.0 / x;
+        }
+        double ans = 1;
+        // Initially curr = x ^(2 ^ 0)
+        double curr = x;
+        // here we are actually perform binary decomposition to k
+        while (k > 0) {
+            if (k % 2 == 1) {
+                ans *= curr;
+            }
+            curr *= curr;
+            //right shift k 1 bit
+            k /= 2;
+        }
+        return ans;
+    }
+    ```
+2. Power with Modular
+   We have a theory for this problem:\
+   $(a \cdot b) \mod c = (a \mod c \cdot b \mod c) \mod c$
+    ```java
+    public int powerWithMod(int x, int n, int m) {
+        // here we can not handle n < 0
+        int ans = 1;
+        int cur = n;
+        while (n > 0) {
+            if (n % 2 == 1) {
+                ans = (int)((long)cur * ans % m);
+            }
+            cur = (int)((long)cur * cur % m);
+            n /= 2;
+        }
+        return ans;
+    }
+    ```
+
+## Q134 Gas Station
+
 
 
