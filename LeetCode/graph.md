@@ -88,11 +88,86 @@ public class SCC {
     }
 }
 ```
-
-### Articulation Points
+## Articulation Points
 
 In undirected graph, articulation points are 
 
 ### Bridge
 
 ### Biconnected Graph
+
+## Eulerian Path
+
+> An **Eulerian Path** in a graph G is a path that passes through every edge of G exactly once.
+> An **Eulerian cycle** is an Eulerian path that starts and ends at the same vertex.
+
+### Existance of Eulerian Tour
+
+|                   | Eulerian Circuit | Eulerian Path |
+|-------------------|------------------|---------------|
+| Undirected Graph  | Every vertex has <br> an even degree |Either every vertex has even degree or <br >exactly two vertices have odd degree|
+| Directed Graph    | Every vertex has equal indegree and outdegree | At most one vertext has (outdegree) - (indegree) = 1 and at most one vertex has (indegree) - (outdegree) = 1 and all other vertices have equal in and out degrees.|
+
+Also, all the nodes with non-zero degree should be in the same connected component.
+
+### Find the Eulerian Path: Hierholzer's Algorithm
+
+First of all, we have if a graph has a eulerian circuit, the circuit is also a eulerian path, which can also be found by the algorithm for Eulerian path. The complexity of this algorithm is $O(E)$.
+
+The main idea of Hierholzer is:
+1. First check whether there is an Eulerian path by degree
+2. find the start node
+3. Begin from the start node to perform dfs: for each unused outgoing edge enter the destination node, after exhausted all outgoing edge, add current node to the beginning of the path
+4. Finally, check whether the length of the path equals $|E| + 1$. This can prevent the case where there are multiple connected components.
+
+```java
+public List<String> findEulerianPath(List<List<String>> edges) {
+    // construct the graph and calculate the degree
+    Map<String, List<String>> graph = new HashMap<>();
+    Map<String, Integer> indegree = new HashMap<>();
+    for (List<String> edge : edges) {
+        graph.putIfAbsent(edge.get(0), new ArrayList<>());
+        graph.get(edge.get(0)).add(edge.get(1));
+        indegree.put(edge.get(1)
+            , indegree.getOrDefault(edge.get(1), 0));
+    }
+
+    // Check whether there is a Eulerian path, and find the start node
+    String start = "";
+    String end = "";
+    String temp = "";
+    for (String node : graph.keySet()) {
+        // in - out
+        int diff = indegree.get(node) - graph.get(node).size();
+        if (Math.abs(diff) > 1) return null; // No Eulerian path
+        else if (diff = -1) {
+            if (start.equals("")) start = node;
+            else return null;
+        }
+        else if (diff = 1) {
+            if (end.equals("")) end = node
+            else return null;
+        } else if (indegree.get(node) > 0) {
+            // Prevent starting from a singleton node
+            temp = node;
+        }
+    }
+    List<String> re = new ArrayList<>();
+    if (temp.equals("")) return re; // Nodes are all separated, no Eulerian path
+    if (start.equals("")) start = temp; // There is a Eulerian circuit
+    // DFS from start then
+    dfs(start, graph, re);
+    if (re.size() == edges.size() + 1) return re;
+    else return null; // Multiple Connected Components.
+}
+
+private void dfs(String node, Map<String, List<String>> graph, List<String> res) {
+    List<String> edges = graph.get(node);
+    while (edges.size() > 0) {
+        String next = edges.remove(edges.size() - 1);
+        dfs(next, graph, res);
+    }
+    res.add(0, node);
+}
+```
+

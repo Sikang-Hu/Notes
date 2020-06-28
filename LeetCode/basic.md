@@ -4,9 +4,6 @@ Note from leetcode, some useful snippets and lemma.
 ## Expend subarray
 
 
-## Binary Search
-
-
 ## Maximum Subarray
 
 

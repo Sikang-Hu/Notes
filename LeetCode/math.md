@@ -88,3 +88,11 @@ private int gcd(int x, int y) {
     else return gcd(y, x % y);
 }
 ```
+
+## Q166 Fraction to Recurring Decimal
+
+First we need to know that the result is a rational number, which means there must be a repeat pattern if it is not an integer. Then, we can just follow how we perform dividing by hand.
+
+### Key Trick
+
+1. How to check whether the result is 
