@@ -1,0 +1,361 @@
+{
+	"info": {
+		"_postman_id": "5c0a0320-ad3d-412a-abf1-0bbbba3575ec",
+		"name": "VaultTest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Transit",
+			"item": [
+				{
+					"name": "TransitCreateKey",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Vault-Token",
+								"type": "text",
+								"value": "4itNQJCiM10Ka1bdE86lXisL"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cf/5ad82105-7821-4619-a845-7ffafbac8ee4/transit/keys/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cf",
+								"5ad82105-7821-4619-a845-7ffafbac8ee4",
+								"transit",
+								"keys",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DecryptData",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Vault-Token",
+								"type": "text",
+								"value": "2PG6Y8wNHy70r7iI55x3k89L"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ciphertext\": \"vault:v1:PbrjmxBYUWPdVh0juDK8iAcUeUNpxsNF/ZAR59Hpb8nPKs8bkYQPvA==\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/cf/5ad82105-7821-4619-a845-7ffafbac8ee4/transit/decrypt/mykey",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cf",
+								"5ad82105-7821-4619-a845-7ffafbac8ee4",
+								"transit",
+								"decrypt",
+								"mykey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EncryptData",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Vault-Token",
+								"type": "text",
+								"value": "2PG6Y8wNHy70r7iI55x3k89L"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"plaintext\": \"aGVsbG8gd29ybGQK\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/cf/5ad82105-7821-4619-a845-7ffafbac8ee4/transit/encrypt/mykey",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cf",
+								"5ad82105-7821-4619-a845-7ffafbac8ee4",
+								"transit",
+								"encrypt",
+								"mykey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Datakey",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Vault-Token",
+								"type": "text",
+								"value": "4itNQJCiM10Ka1bdE86lXisL"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cf/5ad82105-7821-4619-a845-7ffafbac8ee4/transit/keys/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cf",
+								"5ad82105-7821-4619-a845-7ffafbac8ee4",
+								"transit",
+								"keys",
+								"test"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "CheckTTL",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Vault-Token",
+								"value": "13k3svC73XuVucCaJ9vcHeP6",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/token/lookup-self",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"lookup-self"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authenticate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n     \"endpoint\": \"https://vproxy.us-east.philips-healthsuite.com/\",\r\n     \"org_secret_path\": \"/v1/cf/012d5273-1236-44e7-a1ad-b06bb1b29392/secret\",\r\n     \"role_id\": \"7a5c8d98-0b61-b57d-8d33-fad676b65e9b\",\r\n     \"secret_id\": \"51530069-8b3a-8818-8d60-a2a408c00ea1\",\r\n     \"service_secret_path\": \"/v1/cf/5ad82105-7821-4619-a845-7ffafbac8ee4/secret\",\r\n     \"service_transit_path\": \"/v1/cf/5ad82105-7821-4619-a845-7ffafbac8ee4/transit\",\r\n     \"space_secret_path\": \"/v1/cf/718c505a-ee3f-4f6d-bb4a-4efabf31ab2d/secret\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/approle/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"approle",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RenewToken",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Vault-Token",
+								"value": "13k3svC73XuVucCaJ9vcHeP6",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"token\": \"ClientToken\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/token/renew",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"renew"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "KVSecret",
+			"item": [
+				{
+					"name": "PutSecret",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Vault-Token",
+								"value": "8FB94MUJfht4K0xB6TFag7qZ",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sikang\": 123,\r\n    \"some secret\": \"this is my sub secret\",\r\n    \"parent\": \"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/cf/5ad82105-7821-4619-a845-7ffafbac8ee4/secret/test/haha",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cf",
+								"5ad82105-7821-4619-a845-7ffafbac8ee4",
+								"secret",
+								"test",
+								"haha"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSecret",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Vault-Token",
+								"type": "text",
+								"value": "8FB94MUJfht4K0xB6TFag7qZ"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sikang\": 123,\r\n    \"some secret\": \"this is my secret\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/cf/5ad82105-7821-4619-a845-7ffafbac8ee4/secret/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cf",
+								"5ad82105-7821-4619-a845-7ffafbac8ee4",
+								"secret",
+								"test"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
