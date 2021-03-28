@@ -90,8 +90,15 @@ Annotation injection is performed before XML injection. Thus, the XML configurat
 Required anothation applies to bean property setter methods, which indicates that the affected bean property must be populated at configuration time, through an explicit property value in a bean definition or through autowiring. However, assertion is still preferable since it is also effective outside of the container.
 
 ### @Autowired
+Implemented by `AutowiredAnnnotationBeanPostProcessor`
 
-@Inject annotation can be used to replace @Autowired
+This annotation can put at several places:
+1. Field
+2. Constructor(If only one non-default constructor, the @Autowired can be omitted)
+3. Method(Mostly @Bean + parameters)
+4. Parameters
+
+@Inject annotation can be used to replace @Autowired(Lib:Javax.inject)
 
 If @Autowired added to a field or method that expects an array of that type, Spring will provide all beans of that type from the ApplicationContext.
 
@@ -102,6 +109,8 @@ Annotated methods and fiedls are treated required by default, but setting requir
 @Primary, @Qualifier can be used to tuning the priority.
 
 For @annotation-driven injection by name, use @Resouce instead, which is semantically defined to identify a specific targe component by its unique name with decalred type being irrelevant for matching.
+
+The context will first find the matched bean by class, if there are multiple bean, it will use the id to find matched bean. Using @Qualifier to specify id. 
 
 ### @Resource
 
@@ -142,13 +151,35 @@ To maintain strict control over nonexistent values, a PropertySourcesPlaceholder
 
 ## Classpath Scanning
 
+### @ComponentScan
+Specify the class path for component scanning. You can declare include and exclude filters to customize the rule of adding components. When use includeFilters, useDefaultFilters should be set to **false**. After java 8, this is repeatable.
+
 ### @Filter
 
 Extend and modify behavior by applying custom filters. Each filter element requires the **type** and **expression** attributes. There are four types: annotation(default), assignable, aspectj, regex, custom.
 
+Custom: 
+```java
+public class MyTypeFilter implements TypeFilter {
+
+    /** 
+     * metadataReader: reading the info of the class currently under scanning.
+     * metadataReaderFactory: reading info of any class.
+     */
+    @Override
+    public boolean match(MetadataReader mr, MetadatReaderFactory mrf) {
+        AnnotationMetadata annotationMetadata = mr.getAnnotationMetadata();
+        ClassMetadata classMetadata = mr.getClassMetadata();
+
+        return false;
+    }
+}
+```
+
 ### @Named and @ManagedBean
 
 @Named and @ManagedBean can be used as replacement for @Component.
+
 
 ## Java-based Container Configuration
 
@@ -175,9 +206,45 @@ Extend and modify behavior by applying custom filters. Each filter element requi
 
 Arguments of the method will be regarded as dependencies.
 
+Hooks can be used during bean's life cycle(create--initialize--destroy):
+* initMethod, destroyMethod
+* InitializingBean, DisposableBean
+* @PostConstruct, @PreDestroy
+* BeanPostProcessor: postProcessBeforeInitialization, postProcessAfterInitialization
+
+Order:
+1. Constructor
+2. BeanPostProcessor.postProcessBeforeInitialization
+3. Initialization
+4. BeanPostProcessor.postProcessAfterInitialization
+
+
 ### Using `@Configuration`
 
 `@Configuration` is a class level annotaion indicating an object is a source of bean definitions. It declares beans through public `@Bean` annotated methods.
+
+
+### @Conditional
+Conditionally register an bean into the context.
+
+### @Import
+Register a component to the context
+1. @Import(the component you want to register), the default id of that bean will be the full name of its class
+2. ImportSelector: implement `String[] selectImports(AnnotationMetadata importingClassMetadata)`, return an array of names of the class want to register.
+3. ImportBeanDefinitionRegistrar
+
+```java
+public class MyImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+        // Register manually using registry.registerBeanDefinition().
+    }
+}
+```
+
+4. FactoryBean: Create a class implementing FactoryBean, when get the bean using `applicationContext.getBean`
+   1. Retrieved the bean created by the `getObject()` method of the factoryBean by default
+   2. To get the factory itselt, using `getBean("&someFactoryBean")`
 
 ## Environment Abstraction
 
@@ -206,7 +273,7 @@ ctx.register(SomeConfig.class, StandaloneDataConfig.class, JndiDataConfig.class)
 ctx.refresh();
 ```
 
-* Using property `spring.profiles.active`, which accept several arguments seperated by comma.
+* Using property `spring.profiles.active`, which accept several arguments seperated by comma. Or -Dspring.profiles.active=test in argument.
 
 ### Default Profile
 
@@ -229,3 +296,11 @@ It can be configured using `setDefaultProfiles()` in the Environment or through 
 ### Using @PropertySource
 
 `@PropertySource` provides a convenient and declarative mechanism for adding a PropertySoucre to Environment.
+
+
+## Aware
+
+This interface enables user-defined components to access Spring container(ApplicationContext and etc.) xxxAware.
+
+## Transactional
+

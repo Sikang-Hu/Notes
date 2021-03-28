@@ -52,3 +52,25 @@ Spring AOP includes following types of advice:
 
 * Around advice: advice surrounds a join point such as a method invocation. It can perform custom behavior before and after the method invocation. It is also responsible for choosing whether to proceed to the join point or return/throw exception.
 
+## AOP Annotaion
+
+* @Before: run before target method
+* @After: run after target method
+* @AfterReturning: run after normal return of target method
+* @AfterThrowing: run after exception has been thrown by target method
+* @Around: dynamic proxy(jointPoint.proceed())
+
+### @EnableAspectJAutoProxy
+`@Import(AspectJAutoProxyRegistrar.class)` to register an `AnnotationAwareAspectJAutoProxyCreator`, which is a PostProcessor 
+1. Create bussiness beans and aspect beans
+2. AnnotationAwareAspectJAutoProxyCreator intercepts the creation of beans
+3. Wrap aspects advices and create proxy for beans
+
+When executing the target method:
+1. proxy method executes target method
+2. CglibAopProxy.intercept()
+   1. generate a interception chain, MethodInterceptor
+   2. Traverse the chain and execute advice following chains rule.
+
+
+
