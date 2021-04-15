@@ -1,9 +1,6 @@
 # Basic Knowledge
 Note from leetcode, some useful snippets and lemma.
 
-## Expend subarray
-
-
 ## Maximum Subarray
 
 
@@ -356,7 +353,7 @@ The key idea for this problem is that if there is no zero, the maximum product e
 
 ### Proof
 
-Suppose there is such a subarray, if its product is negative, if its left side or right side is negative, it can always expend one more element to get a positive result. If both the left and right are positive, it can just disregard this subarray, to pick the bigger positive number.
+Suppose there is such a subarray, if its product is negative, if its left side or right side is negative, it can always expend one more element to get a positive result. If both the left and right are negative, it can just disregard this subarray, to pick the bigger positive number.
 
 If the subarray is positive. If its left or right is positive, it can always expand one more element to get a larger product. If both left and right are negative, it can expand in two side to get a larger product.
 
@@ -481,6 +478,11 @@ And we have $a^{2^{i + 1}} = a^{2^{i}} \cdot a^{2^{i}}$. So we can keep calculat
     ```
 
 ## Q134 Gas Station
+
+## Q274 H-index
+
+### Key Idea
+If we can find the upper bound and lower bound of a data set, we can trim it so that we can use the counting sort;
 
 
 

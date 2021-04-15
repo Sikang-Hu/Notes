@@ -1,5 +1,33 @@
 # Binary Tree
 
+## Predecessor & Successor
+
+> Predecessor is the "before node", i.e. the previous node in the inorder traversal, or the **largest** node before the current node.
+
+> Successor is the "after node", i.e. the next node in the inorder traversal, or the **smallest** node after the current node.
+
+Let's use successor as an example:
+
+There are two possible situations here:
+
+1. Node has a right child, then the successor is somewhere lower in the tree. To find the successor, go to right once and then find the leftmost child.
+2. Node doesn't right child, then the successor is somewhere upper in the tree. Then go up until **the node is the left child of its parent**(this condition is better than parent's val larger than current node's val, since it also cover the equal case), if no such node, there is no successor.
+
+### Implementation
+
+```java
+public Node inorderSuccessor(Node n) {
+    if (n == null) return null;
+    if (n.right != null) {
+        n = n.right;
+        while (n.left != null) n = n.left;
+        return n;
+    }
+    while (n.parent != null && n.parent.right == n) n = n.parent;
+    return n.parent;
+}
+```
+
 ## Inorder Traverse Iteratively
 To traverse a binary tree iteratively, we always need a stack. Here are the steps:
 
@@ -13,15 +41,16 @@ To traverse a binary tree iteratively, we always need a stack. Here are the step
 ```java
 
 public void inorder(TreeNode root) {
+    // mimic hte call stack
     Deque<Integer> stack = new ArrayDeque<>();
     TreeNode curr = root;
     // This condition is pretty important, if missing the first condition, it will not traverse the right subtree of the root
     while (curr != null || !stack.isEmpty()) {
         while (curr != null) {
-            stack.add(curr);
+            stack.push(curr);
             curr = curr.left;
         }
-        curr = stack.removeLast();
+        curr = stack.pop();
         process(curr);
         curr = curr.right;
     }
@@ -36,7 +65,7 @@ private void process(TreeNode root) {
 
 ## Inorder Traversal with Morris Traversal
 
-The basic idea of Morris Traversal is to find the predecessor and make current root its right children. Then go look at the left subtree of current root. After the left subtree, the program will go back to the root from the rightmost node of its left subtree(which is his predecessor you just linked). This time we need to break this link, and begin to look at the right child the current root since we have iterate throught the right subtree.
+The basic idea of Morris Traversal is to find the predecessor and make current root its right children. Then go look at the left subtree of current root. After the left subtree, the program will go back to the root from the rightmost node of its left subtree(which is his predecessor you just linked). This time we need to break this link, and begin to look at the right child of the current root since we have iterate throught the left subtree.
 
 Here are the steps:
 

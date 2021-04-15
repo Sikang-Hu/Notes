@@ -96,3 +96,32 @@ First we need to know that the result is a rational number, which means there mu
 ### Key Trick
 
 1. How to check whether the result is 
+
+
+
+## Q258 Add Digit
+
+Digit Root: Recursive sum of digits of a decimal
+
+### Main idea
+
+$$dr_{10}(n) = 0\quad if \ n = 0$$
+$$dr_{10}(n) = 9\quad if \ n = 9k$$
+$$dr_{10}(n) = n \mod 9\quad if \ n \neq 9k $$
+
+### Proof
+
+$$n = d_{0} + d_{1} \cdot 10 + d_{2} \cdot 10 ^{2} + \cdots + d_{k} \cdot 10 ^{k} $$
+$$n = d_{0} + d_{1} \cdot (9 + 1) + d_{2} \cdot (9 \times 11 + 1) + \cdots + d_{k} \cdot (9 \times 111\cdots1 + 1) $$
+$$n = (d_{0} + d_{1} + d_{2} + \cdots + d_{k}) + 9 \cdot (d_{1} + 11 \cdot d_{2} + 111 \cdot d_{3} + \cdots + 111\cdots11d_{k}) $$
+Hence, we have
+$$ n \mod 9 = (d_{0} + d_{1} + d_{2} + \cdots + d_{k}) \mod 9$$
+
+### Implementation
+```java
+public int digitRoot(int num) {
+    if (num == 0) return 0;
+    if (nums % 9 == 0) return 9;
+    return num % 9;
+}
+```

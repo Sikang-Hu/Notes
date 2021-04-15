@@ -129,7 +129,7 @@ public List<String> findEulerianPath(List<List<String>> edges) {
         graph.putIfAbsent(edge.get(0), new ArrayList<>());
         graph.get(edge.get(0)).add(edge.get(1));
         indegree.put(edge.get(1)
-            , indegree.getOrDefault(edge.get(1), 0));
+            , indegree.getOrDefault(edge.get(1), 0) + 1);
     }
 
     // Check whether there is a Eulerian path, and find the start node
