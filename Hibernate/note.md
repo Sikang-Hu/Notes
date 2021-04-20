@@ -64,3 +64,9 @@ When query for many, hibernate will only query the many by default, but will not
 Set inverse = false at 1's collection, so that the 1 will not maintain the relation to avoid extra update.
 
 When get the collection from the 1, hibernate will return its internal set(PersistentSet) instead of the set from the Java SE. There is also LazyInitializationException if session closed ahead of time.
+
+## Properties of Cascade
+Define how to manipulate the entities in the collection. If it is set to delete, all the entities in the collections will be deleted when the parent entities is deleted.
+
+## 1 to 1
+There are two way to do 1 to 1 mapping, either by the foreign key or primary key.
