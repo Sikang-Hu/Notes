@@ -37,6 +37,8 @@ Method can be terminated by normal return or throwing a exception.
 #### Local Variables
 An array of int to store parameters and local variables, can store primitive, reference and returnAddress. The size of the local variables is determined when compiled. Slot is the smallest unit in local variables table. Data type within 32bits takes one slot, while 64bits(long, double) data type takes two slot.
 
-If current frame is created by constructor or instance method, the reference to this object will be put at index 0, and the rest will be arrange by their declaration sequence.
+If current frame is created by constructor or instance method, the reference to this object will be put at index 0, and the rest will be arrange by their declaration sequence. The slot can be reused if a local variable's field ends(e.g. for loop or if block ends).
 
 When the method ends, the local variables table will also be destroyed.
+
+The local variable is the most related part in jvm optimization in the stack frame.
