@@ -40,3 +40,24 @@ An array of int to store parameters and local variables, can store primitive, re
 If current frame is created by constructor or instance method, the reference to this object will be put at index 0, and the rest will be arrange by their declaration sequence.
 
 When the method ends, the local variables table will also be destroyed.
+
+#### Operand Stack
+A stack implemented by **array**, also called Expression Stack. It is used to stored the intermediate result during the execution. The stack will be created when the when the method begin to be executed. Every stack has a `max_stack` for the depth of the stack, which is defined at the compiling. 32bits data type takes one slot, while 64bits data type takes one slot. The return value will be push into the stack lastly.
+
+#### Top-of-Stack Cashing
+Stack-based virtual machine has more compact structure, but it needs more instruction to complete an operation, i.e. more instruction dispatch and memory read/write. To optimize this, HotSpot JVM designed the ToS, caching all top-of-stack element in the register of the physical CPU to reduce the read/write to the memory to improve the performance.
+
+#### Dynamic Linking
+Every stack frame contains a reference to the method it belong in the runtime constant pool. The purpose of storing it is to support dynamic linking(invokedynamic).
+
+When java source code is compiled to bytecode, all the variables and method references stored as **Symbolic Reference** in the constant pool. Dynamic linking is used to convert the symbolic reference to direct reference.
+
+#### Method Invocation
+1. Static linking: when the method to be invoked is known at compiling, and won't change during the execution, converting the symbolic reference to direct reference is static linking.
+2. Dynamic Linking: the method to be invoked cannot be determined during the compilation, the conversion is dynamic linking. 
+
+
+Binding is to convert the symbolic reference to direct reference.
+* Early binding: target method can be determined at the compilation
+* Late binding: determined at the runtime, e.g. call the methods of interfaces.
+
