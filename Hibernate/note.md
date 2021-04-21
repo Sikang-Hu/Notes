@@ -6,7 +6,7 @@
    2. Setting of Hibernate: dialect, format, show option
    3. O/R Mapping
 
- ## flush() & commit()
+## flush() & commit()
 flush: ensure the records in the database are consistence with the object in the Session. To do that, there are several cases:
 1. commit() in the Transaction: call the flush() in the Session, then commit
 2. flush() may result to SQL call, but do not commit
@@ -17,6 +17,12 @@ flush: ensure the records in the database are consistence with the object in the
 flush will call a bunch of SQL but won't commit the transaction. While commit() first calls flush() and then commit the transaction, persist the changes.
 
 However, we can still change the FlushMode to set when the flush() got called.
+
+clear() clear the cache, but will not perform commit nor rollback, not even a flush(), so do call a flush before clear to generate sql queries for pending entities update.
+
+Rollaback or commit actions are not performed on the application side, but in the database: hibernate will just ask the database to commit or rollback. It is an database internal mechanism that will persist(or revert) the data modification performed thanks to all SQL queries run since the start of the transaction. 
+
+Opening a transaction in hibernate is not performing a lot of thing: mainly getting a db connection out of the pool, and telling the database to NOT `auto_commit` following sql queries but to wait for a commit or rollback command.
 
 ## refresh()
 refresh the entities in the context
@@ -70,3 +76,161 @@ Define how to manipulate the entities in the collection. If it is set to delete,
 
 ## 1 to 1
 There are two way to do 1 to 1 mapping, either by the foreign key or primary key.
+
+## Query Strategy of Hibernate
+
+* reduce the memory consumed
+* higher performance, i.e. fewer SQL query
+
+At class level, we can set the lazy field to **true** to enable lazy-loading. The default value is true.
+
+At set level, lazy load applied for 1-n and n-n by default. Can be set to false(not recommanded) or to extra which will postpone the query as possible.
+
+When lazy is set to true, Hibernate will initialize the collection when the program first access the collection's attributes, such as: iterator(), size(), isEmpty(), contains()... Or called Hibernate.initialize() explicitly.
+
+When lazy is set to extra, Hibernate will initialize the collection when the program first calls iterator(). When it calls size(), contains and isEmpty(), Hibernate will not initialize instances in the set, but just query the necessary information.
+
+### batch-size
+How many set to initialize at one time.
+
+### fetch determine how to initialize the collection
+ * select
+ * subselect: use subselect to initialize all set
+ * join: when load 1 side, using left join to query all n side entities, and initialize the collection
+   * ignore the lazy field
+   * HQL will ignore the fetch = join
+
+## Query in Hibernate
+
+### Hibernate Query Language
+A query language offered by hibernate, it is object oriented.
+1. createQuery(hql) to create query object: `session.createQuery("From Employee e WHERE e.salary > ? AND e.email LIKE ? AND e.dept = ? ORDERBY e.salary")`
+2. bind the parameters: `query.setFloat(0, 6000).setString(1, "%A%").setEntity(2, dept)`, it supports method chaining(Fluent Interface).
+3. execute the query.list()
+Also support named parameters, param name following semicolumn ":emp"
+
+Pagenation: 
+```java
+int pageNo = 3;
+int pageSize = 5;
+query.setFirstResult((pageNo - 1) * pageSize)
+     .setMaxResults(pageSize)
+     .list();
+```
+
+GetNamedQuery to use predefined query in the configuration files
+
+Added Constructor in the HQL to encapsulate the result in projection query.
+
+LEFT JOIN FETCH left outer join, list() will return a list will all initialized instances.
+
+LEFT JOIN will return list of Object[]. If only certain object is needed, we can add a SELECT in the query. Similar for INNER JOIN and INNER JOIN FETCH
+
+### Hibernate QBC
+```java
+// 1. create Criteria object
+Criteria criteria = session.createCriteria(Employee.class);
+// 2. Add Condifions
+criteria.add(Restrictions.eq("email", "abc@gmail.com"));
+criteria.add(Restrictions.gt("salary", 5000F));
+// 3. Execute Query
+Employee employee = (Employee)criteria.uniqueResult();
+System.out.println(employee);
+```
+
+To represent AND, we can use Conjunction Object:
+```java
+Conjunction conjunction = Restrictions.conjunction();
+conjunction.add(Restrictions.eq("email", "abc@gmail.com"));
+conjunction.add(Restrictions.gt("salary", 5000F));
+```
+To represent OR, we can use disjunction:
+```java
+Disjunction disjunction = Restrictions.disjunction();
+// ... same as above
+```
+
+Statistic can be represented using Projections，can also add Order, pagenations and etc..
+
+### Native SQL Query
+```java
+session.createSQLQuery(".....");
+```
+
+## Second Level Cache
+There are two cache level in Hibernate:
+1. At session level, it is transaction level, managed by hibernate
+2. At sessionFactory level, it is process level
+   1. Internal cache: used by Hibernate to store ORM and predefined SQL query, it is read-only
+   2. A configurable external cache: Hibernate will not use this cache by default. It is a copy of data in the DB, and can use disk or memory to realize.
+
+Data to be put in the cache
+* Won't be modified very often
+* Not critical, allow some conflicts
+
+To use the cache, we need to configure a cache plugin. `hibernate.cache.region.factory_class=org.xxxx`, `cache.use_second_level_cache`
+
+Second level cache for collections: 
+1. cache for the set, will cache the id of the element in the collections
+2. cache for the elements in the set, otherwise it will query the details one by one.
+
+### Query Cache(depends on second level cache)
+`cache.use_query_cache=true`
+`criteria.setCacheable(true);`
+HQL will not use second level cache, but we can use the query cache.
+```java
+Department dept = (Department) session.get(Department.class, 80);
+System.out.println(dept.getEmps().size());
+
+Query query = session.createQuery("FROM Employee e WHERE e.dept.id = 80");
+List<Employee> emps = query.list();
+System.out.println(emps.size()); // This will result to a new sql query, which can prove the second level cache was not used.
+```
+If we use .iterate(), the returned object will contains only IDs for elements, and Hibernate will query for the object with corresponding OID in the cache(session cache and second level cache). If there isn't, then query the DB. However, most time, we use list(), which contains all the data for the elements, because if the object is not in the cache, Hibernate will query them one by one, which is pretty expensive.
+
+### Timestamp Cache
+If there is update after last query, hibernate will use the timestamp to decide which result to return.
+
+## Session Management
+Hibernate offers 3 ways to manage session object
+1. Bind with local thread
+2. Bind with the JTA transaction
+3. managed by program
+
+`hibernate.current_session_context_class= thread|jta|managed`
+
+### Get from thread
+```java
+Session session = sessionFactory.getCurrentSession(); // get the session bound with current thread
+Transaction transaction = session.beginTransaction();
+
+// CRUD....
+
+transaction.commit(); // by the time transaction commit or rollback, the session will be close in this mode.
+```
+
+## Bulk Operation
+There are 4 ways:
+1. Session
+2. HQL
+3. StatelessSession
+4. JDBC API
+
+JDBC API is recommended, which is most efficient.
+
+Q: Why not use Session?
+
+A:When save() and update() is called, session will cache the object, so if the number of objects is large, it may take all the cache. While we can flush() the cache and clear() to clear it, the performance will not improve very much. 
+
+We also need to configure the batch_size to make it consistent with the size of the batch operation. 
+
+Note: if we use identiy as the id generator, Hibernate cannot perform bulk insertion since it need to insert one by one to acquire the id of the entities from the database.
+
+Batch Update use scrollableResults, which does not contain any entity object, but a reference to locate them in the DB. When access the specific element, it will retrieve it from the DB.
+
+Q: Why not HQL
+
+A: HQL only support INSERT INTO... SELECT, but not INSERT INTO ... VALUES.
+
+StatelessSession has not cache, but the low level, it still use JDBC.
+
