@@ -6,7 +6,7 @@
    2. Setting of Hibernate: dialect, format, show option
    3. O/R Mapping
 
- ## flush() & commit()
+## flush() & commit()
 flush: ensure the records in the database are consistence with the object in the Session. To do that, there are several cases:
 1. commit() in the Transaction: call the flush() in the Session, then commit
 2. flush() may result to SQL call, but do not commit
@@ -17,6 +17,12 @@ flush: ensure the records in the database are consistence with the object in the
 flush will call a bunch of SQL but won't commit the transaction. While commit() first calls flush() and then commit the transaction, persist the changes.
 
 However, we can still change the FlushMode to set when the flush() got called.
+
+clear() clear the cache, but will not perform commit nor rollback, not even a flush(), so do call a flush before clear to generate sql queries for pending entities update.
+
+Rollaback or commit actions are not performed on the application side, but in the database: hibernate will just ask the database to commit or rollback. It is an database internal mechanism that will persist(or revert) the data modification performed thanks to all SQL queries run since the start of the transaction. 
+
+Opening a transaction in hibernate is not performing a lot of thing: mainly getting a db connection out of the pool, and telling the database to NOT `auto_commit` following sql queries but to wait for a commit or rollback command.
 
 ## refresh()
 refresh the entities in the context
@@ -64,6 +70,12 @@ When query for many, hibernate will only query the many by default, but will not
 Set inverse = false at 1's collection, so that the 1 will not maintain the relation to avoid extra update.
 
 When get the collection from the 1, hibernate will return its internal set(PersistentSet) instead of the set from the Java SE. There is also LazyInitializationException if session closed ahead of time.
+
+## Properties of Cascade
+Define how to manipulate the entities in the collection. If it is set to delete, all the entities in the collections will be deleted when the parent entities is deleted.
+
+## 1 to 1
+There are two way to do 1 to 1 mapping, either by the foreign key or primary key.
 
 ## Query Strategy of Hibernate
 
