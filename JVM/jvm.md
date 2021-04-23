@@ -117,4 +117,14 @@ Java invokes non-java code. E.g. getClass(). no method body for native method.
 ## Heap
 Heap and Method Area are unique for each process(i.e. a jvm instance). Heap is created when jvm bootstrapped, and its size is also determined at that time. It is the largest area managed by jvm. Heap can lie on incontinuous chunk in the physical memory, but continuous in logical memory. All the threads share the heap, and there are private buffer for each thread(Thread Local Allocation Buffer, TLAB).
 
+* Young Generation Space
+  * Eden Space
+  * Survivor
+* Tenure Generation Space
+* Permanent Space(Meta Space after JDK 8) Implemented in Method Area
 
+* -XX:+PrintGCDetails to print gc info
+* -Xms: set the initial memory of the heap area, same as -XX:InitialHeapSize
+* -Xmx: set the maximum memory of the heap area, same as -XX:MaxHeapSize. If there this limit is exceeded, there will be a OutOfMemoryError.
+
+Usually, we will set initial and the maximum the same, so that the gc does not need reassign the heap after clear the heap, which improve the performance. By default, the inital mem is set to physical mem / 64, while the maximum is set to physical mem / 4.
