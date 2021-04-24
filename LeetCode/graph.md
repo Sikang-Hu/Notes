@@ -90,9 +90,98 @@ public class SCC {
 ```
 ## Articulation Points
 
-In undirected graph, articulation points are 
+In undirected graph, articulation points are the vertice if removing it disconncets the graph. The articulation points demonstrates the vulnerabilities in a connected network. Suppose there is a vertex `V` which can be reached by `U`, and also can be reached by `U`'s ancestor `A`. For `U` to be a articulation point, there should be two conditions hold:
+1. If all paths from A to V require U to be in the graph
+2. If U is the root of the DFS traversal with at least two children subgraphs dis connected from each other.
+
+```java
+class Solution {
+    private int tt = 1;
+    private boolean[] ap;
+    public Set<Integer> articulationPoint(int n, List<List<Integer>> connections) {
+        List<List<Integer>> g = new ArrayList<>();
+        for (int i = 0; i < n; i++) g.add(new ArrayList<>());
+        for (List<Integer> e : connections) {
+            g.get(e.get(0)).add(e.get(1));
+            g.get(e.get(1)).add(e.get(0));
+        }
+        int[] disc = new int[n];
+        int[] low = new int[n];
+        ap = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            if (disc[i] == 0) 
+                ap[i] = dfs(g, 0, 0, disc, low) > 1; // check condition 2 for the root.
+        }
+        Set<Integer> re = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            if (ap[i]) re.add(i);
+        }
+        return re;
+    }
+
+    private int dfs(List<List<Integer>> g, int node, int prev, int[] disc, int[] low) {
+        if (disc[node] != 0) return 0;
+        disc[node] = tt++;
+        low[node] = disc[node];
+        int children = 0;
+        for (int next : g.get(node)) {
+            if (disc[next] == 0) {
+                children++;
+                dfs(g, next, node, disc, low);
+                if (low[next] >= disc[node]) 
+                    ap[node] = true; // equals means the root of the circle, which is also ap, this may count the root, while it will be check when the dfs finished by condition 2.
+                low[node] = Math.min(low[node], low[next]);
+            } else if (next != prev) {
+                // for ap, we can only use disc
+                low[node] = Math.min(low[node], disc[next]); 
+            }
+        }
+        return children;
+    }
+}
+```
+
+There are several points to note:
+* When dfs on a neighbor finished, check the lowest timestamp it has seen with the discover time of the current node using `low[next] >= disc[node]`. If equal holds, node is the root of this circle it should be a articulation node if it is not root. So at the end, we will use condition 2 to check whether the root is ap.
+* When reached at a visited node(ancestor), we use `low[node] = Math.min(low[node], disc[next])` to update the lowest timestamp instead of using `low[node] = Math.min(low[node], low[next])`. The intuition behind is to avoid cases where the route to the ancestor require a node on the route to the current node.
 
 ### Bridge
+```java
+class Solution {
+    private int t = 1;
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        List<List<Integer>> g = new ArrayList<>();
+        for (int i = 0; i < n; i++) g.add(new ArrayList<>());
+        for (List<Integer> e : connections) {
+            g.get(e.get(0)).add(e.get(1));
+            g.get(e.get(1)).add(e.get(0));
+        }
+        List<List<Integer>> re = new ArrayList<>();
+        int[] timeStamp = new int[n];
+        dfs(g, re, 0, -1, timeStamp); // can use for loop if the graph is not connected
+        return re;
+    }
+
+    private int dfs(List<List<Integer>> g, List<List<Integer>> re, int node, int prev, int[] time) {
+        if (time[node] != 0) return time[node];
+        time[node] = t++;
+        int min = Integer.MAX_VALUE;
+        for (int next : g.get(node)) {
+            if (time[next] == 0) {
+                int l = dfs(g, re, next, node, time);
+                if (l > time[node])
+                    re.add(List.of(node, next));
+                min = Math.min(l, min);
+            } else if (next != prev) {
+                // this is a previous visited node, use its discover time as a candidate for the earliest 
+                // node. you can also use the low value if you have it.
+                min = Math.min(min, time[next]); 
+            }
+        }
+        return Math.min(min, time[node]);
+    }
+}
+```
 
 ### Biconnected Graph
 

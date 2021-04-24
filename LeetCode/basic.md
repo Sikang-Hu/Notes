@@ -90,7 +90,7 @@ private void backTrack(int[] nums, List<Integer> track, int first) {
     }
 ```
 
-## Q884 Backspace String Compare
+## Q844 Backspace String Compare
 
 For this problem, we can first know that future backspace will delete character that has been 
 seen, so we cannot decide which character is in the finally string. Since the string is immutable we cannot swap the char to get the finally string.
@@ -110,7 +110,7 @@ Having observed that, we can record the minimum value so far along with each ele
 
 ## Q62 Unique Path
 
-While this problem can be down by dynamic programming, it is actually a combinatorial problem: pick h going downs from h+v steps(h = m - 1, v = n - 1).
+While this problem can be done by dynamic programming, it is actually a combinatorial problem: pick h going downs from h+v steps(h = m - 1, v = n - 1).
 
 ## Negative Modulos in Java
 
@@ -233,7 +233,7 @@ public boolean symmetric(TreeNode root) {
 
 
 ## Q105 Construct Binary Tree from Preorder and Inorder Traversal
-
+Great question for Understanding traversal.
 ### Iterative Implementation
 ```java
 public TreeNode buildTree(int[] preorder, int[] inorder) {
@@ -263,6 +263,30 @@ public TreeNode buildTree(int[] preorder, int[] inorder) {
     return root;
 }
 ```
+Recursive version:
+```java
+    int p = 0;
+    int i = 0;
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if (preorder == null || inorder == null || preorder.length != inorder.length || preorder.length == 0) return null;
+        return build(preorder, inorder, Integer.MIN_VALUE);
+    }
+    
+    // Instead of searching the root, simply separate the array, and recurse with the stop point, for the left hand side, the stop should be current root
+    // for the right hand size, the stop should be previous stop.
+    private TreeNode build(int[] preorder, int[] inorder, int stop) {
+        if (p == preorder.length) return null;
+        if (inorder[i] == stop) {
+            return null;
+        }
+        TreeNode ret = new TreeNode(preorder[p++]);
+        ret.left = build(preorder, inorder, ret.val);
+        i++;
+        ret.right = build(preorder, inorder, stop);
+        return ret;
+    }
+```
+Time complexity: O(n), Space Complexity: O(n) Since every node will be construct only once, and each level is O(1), so the total runtime is O(n). For the space, it related to the depth of the tree, for a linkedlist, it will be O(n).
 
 ## Q1008 Construct Binary Search Tree from Preorder Traversal
 
@@ -337,7 +361,7 @@ public TreeNode bstFromPreorder(int[] preorder) {
             TreeNode child = new TreeNode(preorder[i]);
             if (parent.val < child.val) parent.right = child;
             else parent.left = child;
-            s.push(parent.right);
+            s.push(child);
         }
     }
 ```
@@ -403,7 +427,7 @@ The basic idea for this implementation is the reverse of current list is to put 
 
 ```java
 public ListNode reverseList(ListNode head) {
-    return reverseList(head, null);
+    return help(head, null);
 }
 
 public ListNode help(ListNode head, ListNode re) {

@@ -117,4 +117,7 @@ Java invokes non-java code. E.g. getClass(). no method body for native method.
 ## Heap
 Heap and Method Area are unique for each process(i.e. a jvm instance). Heap is created when jvm bootstrapped, and its size is also determined at that time. It is the largest area managed by jvm. Heap can lie on incontinuous chunk in the physical memory, but continuous in logical memory. All the threads share the heap, and there are private buffer for each thread(Thread Local Allocation Buffer, TLAB).
 
+The heap area is the run-time data area from which memory for almost all the class instances and arrays is allocated. Object in the heap will not be removed right after the return of methods, GC will collect the space then.
+
+
 
