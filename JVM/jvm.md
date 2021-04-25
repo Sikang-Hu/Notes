@@ -119,5 +119,43 @@ Heap and Method Area are unique for each process(i.e. a jvm instance). Heap is c
 
 The heap area is the run-time data area from which memory for almost all the class instances and arrays is allocated. Object in the heap will not be removed right after the return of methods, GC will collect the space then.
 
+* Young Generation Space
+  * Eden Space
+  * Survivor
+* Tenure Generation Space
+* Permanent Space(Meta Space after JDK 8) Implemented in Method Area
 
 
+(-X is runtime parameter for the jvm)
+
+* -XX:+PrintGCDetails to print gc info
+* -Xms: set the initial memory of the heap area, same as -XX:InitialHeapSize
+* -Xmx: set the maximum memory of the heap area, same as -XX:MaxHeapSize. If there this limit is exceeded, there will be a OutOfMemoryError.
+
+The configuration for heap only affect Young Generation and Tenure Generation Space, not the Permanent Space. 
+
+
+Usually, we will set initial and the maximum the same, so that the gc does not need reassign the heap after clear the heap, which improve the performance. By default, the inital mem is set to physical mem / 64, while the maximum is set to physical mem / 4. The actual memory of Runtime will be less than the declared because only one survivor region can be used(either s00 or s01). Apart from that, There are some preoccupied space in the memory, so the actual size might be less than declared physical mem. 
+
+### Young Generation and Old Generation
+Object in java can be divided into two types:
+1. Short life cycle, the creation and destroy of this object is pretty fast.
+2. Long life cycle, sometimes can be as long as jvm's.
+
+`-XX:NewRatio` to configure the ratio of OG and YG, which is 2 by default. e.g. -XX:NewRatio=2 YG takes 1/3 and OG takes 2/3. If there are more type 2 objects, we can use increase the size of OG.
+
+`-XX:SurvivorRatio` to configure the ratio of Eden Space to the survivor spaces, which is 8 by default, i.e. 8:1:1. If not, we can assign explicitly.
+`-XX:-UseAdaptiveSizePolicy`(minus to close the adaptive memory allocation policy).
+`-Xmn`: set the size of Young Generation Space. It will override -XX:NewRatio parameter.
+
+* Most object will be initialized at Eden Space, but if its size exceed the limit of Eden Space, it will be put at other area, like OG. 
+* Most object will be destroyed at the Eden Space.
+
+### Memory Assignment
+1. The newly created object is put at Eden Space
+2. When Eden space is full, and there is new object to be create, the jvm will collect the garbage in the Eden Space(YGC/Minor GC), destroy the object referred by nothing。
+3. Move the survivor to the survivor 0 area, and tag it with age = 1, and create the new object.
+4. If another GC is triggered, survivors from last time will be put at survivor 1 if they are not collected. And their age will be incremented.
+5. When the a survior's age is equal to 15, the next time it will be promoted into old generation area(promotion). Can set this parameter: `-XX:MaxTenuringThreshold=<N>` to configure.
+
+GC happens in the YG frequently, in OG seldomly and barely at Permanent Space/Meta Space.
