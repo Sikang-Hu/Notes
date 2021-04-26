@@ -135,7 +135,7 @@ The heap area is the run-time data area from which memory for almost all the cla
 The configuration for heap only affect Young Generation and Tenure Generation Space, not the Permanent Space. 
 
 
-Usually, we will set initial and the maximum the same, so that the gc does not need reassign the heap after clear the heap, which improve the performance. By default, the inital mem is set to physical mem / 64, while the maximum is set to physical mem / 4. The actual memory of Runtime will be less than the declared because only one survivor region can be used(either s00 or s01). Apart from that, There are some preoccupied space in the memory, so the actual size might be less than declared physical mem. 
+Usually, we will set initial and the maximum the same, so that the gc does not need reassign the heap after clear the heap, which improve the performance. By default, the inital mem is set to physical mem / 64, while the maximum is set to physical mem / 4. The actual memory of Runtime will be less than the declared because only one survivor region can be used(either s0 or s1). Apart from that, There are some preoccupied space in the memory, so the actual size might be less than declared physical mem. 
 
 ### Young Generation and Old Generation
 Object in java can be divided into two types:
@@ -159,3 +159,52 @@ Object in java can be divided into two types:
 5. When the a survior's age is equal to 15, the next time it will be promoted into old generation area(promotion). Can set this parameter: `-XX:MaxTenuringThreshold=<N>` to configure.
 
 GC happens in the YG frequently, in OG seldomly and barely at Permanent Space/Meta Space.
+
+#### Special Case
+
+If the object is too large to be put in the YG, it will be put into OG directly. If is does not fit into the OG, majorGC/FGC will be triggered, and the object will be put after GC. If still cannot fit into OG, OutOfMemoryError will be thrown.
+
+If the object in Eden Space is larger than the size of suvivor space, it will be put into the OG directly.
+
+If the total size of objects with the same age in the survivor space exceeds half the size of survivor, all objects at that age or elder than that will be put into OG, ignoring MaxTenuringThreshold.
+
+#### Minor GC, Major GC and Full GC
+When jvm collects the garbage, it will not always collect on all three space. Mostly, the GC happens at the Young Generation Space. For hotspot VM, there are two kinds of GC:
+
+* Partial GC
+  * Minor GC/ Young GC: collect only on Eden, S0 S1. It will lead to STW. Minor GC runs frequently and fast.
+  * Major GC/ Old GC: collect only on OG. When Major GC happens, it is often companioned by a Minor GC. Major GS is ususally 10x slow than Minor GC, which means longer STW. If memory is still insufficent after Major GC, the program will throw OOM.
+  * Mixed GC: Collect on both YG and OG, only G1 GC do that.
+* Full GC: collect on the whole java heap and method area. Avoid full gc in the optimization to have a better performance, since it is costy.
+
+### Why separate the heap into different region
+
+Separating the heap can improve the performance of Garbage Collection. Most objects in Java has short life cycle, if we don't separate the heap, GC will scan the whole heap every time, which is costy. By putting those transient objects into the Eden Space improve the efficiency significantly.
+
+### Thread Local Allocation Buffer(TLAB)
+The reason why we want buffer is reducing the need of synchronization between threads.
+Heap is shared by threads, every thread can access the data in the heap. Objects are created frequently in jvm, and its not thread safe to assign a block of memory during the concurrent programming. To avoid conflict, we need to lock the memory when allocate, which will slow down the program. 
+
+Hence, we have TLAB for each thread in the Eden Space. JVM will first try to create an object in the TLAB. TLAB will just occupied very small piece of memory(1% of Eden). If the object cannot be created in the TLAB, jvm will create it at Eden directly with synchroniztion.
+
+`-XX:UseTLAB` the default value is true.
+`-XX:TLABWasteTargetPercent` set the percentage
+
+`jps: look up the pid`
+`jinfo - flag SurvivorRatio <jpid>` look up some parameter.
+
+
+### Escape Analysis
+
+`-XX: +DoEscapeAnalysis` open the analysis
+`-XX: +PrintEscapeAnalysis` to show the escape analysis
+
+`-XX: +EliminateAllocations` to enable converting aggregate to the scalar
+
+## Method Area
+
+```java
+Person person = new Person();
+```
+
+When initialize a variable, there is a reference in the stack(LV) pointing to an instance in the heap. The instance in the heap contains a pointer to the class data in the method area.
