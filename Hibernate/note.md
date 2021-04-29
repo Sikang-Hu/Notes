@@ -25,7 +25,7 @@ Rollaback or commit actions are not performed on the application side, but in th
 Opening a transaction in hibernate is not performing a lot of thing: mainly getting a db connection out of the pool, and telling the database to NOT `auto_commit` following sql queries but to wait for a commit or rollback command.
 
 ## refresh()
-refresh the entities in the context
+refresh the entities in the context, it enforces the session to send a select query. However, the entities might not be the latest depends on the isolation level of the data base. If the level is repreatable read, the select query will get the same data as the beginning of the transaction. We can set the isolation level in the database or using hibernate.connection.isolation.
 
 ## Status of Object in Hibernate
 

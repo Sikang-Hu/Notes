@@ -125,3 +125,27 @@ public int digitRoot(int num) {
     return num % 9;
 }
 ```
+
+## Q326 Power of Three
+
+The naive implementation is to iterate or recursive, here is a refined version:
+```java
+public boolean isPowerOfThree(int n) {
+    if (n < 1) return false;
+    while (n % 3 == 0) n / = 3;
+    return n == 1;
+}
+```
+
+However, it also can also be solved without loop/recursion, which leverage that 3 is a prime. Actually, for all primes(2,3,5,7,11), we can applied this strategies.
+1. The input is a integer
+2. 3 is a prime
+
+If the max int that is power of 3 are given, n is power of 3 only if it can divide that max int (`3^19`).
+```java
+public boolean isPowerOfThree(int n) {
+    return n > 0 && 1162261467 % n == 0;
+}
+```
+
+If it is asked for 4, we can take a sqrt first.
