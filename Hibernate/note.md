@@ -29,8 +29,8 @@ refresh the entities in the context, it enforces the session to send a select qu
 
 ## Status of Object in Hibernate
 
-1. Transient
-2. Persist
+1. Transient: OID is null, is not in the session's cache and has no record in the database.
+2. Persist: OID is not null, in the session's cache and has a corresponding record in the db. flush will update the record based on the change in the session; every persist must be 1-to1 mapping to the record in the database.
 3. Removed
 4. Detached
 

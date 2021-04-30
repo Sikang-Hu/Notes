@@ -149,3 +149,66 @@ public boolean isPowerOfThree(int n) {
 ```
 
 If it is asked for 4, we can take a sqrt first.
+
+
+## Q31 Next Permutation
+
+When we write the permuation manually, we always find the last increasing(since the sequence after that is decreasing, it is the biggest permutation for those elements). To get the next permuation, we swap the last increasing number with a slight larger one behind it, and the sequence behind it should still be decreasing. Then, we reverse the decreasing sequence to obtain the smallest sequence with those elements, and acquire the next permutation.
+
+```java
+public void nextPermutation(int[] nums) {
+    if (nums.length < 2) return; // if less than two element, no change on permutation
+    int n = nums.length;
+    int i = n - 2;
+    while (i >= 0 && nums[i] >= nums[i + 1]) i--; // skip the element that larger than its next
+    if (i < 0) { // if the whole list is decreasing, reverse it and return!
+        reverse(nums, 0, n - 1); 
+        return;
+    }
+    int j = n - 1; // from the last to find the first element bigger than nums[i](skip smaller or equal)
+    while (nums[j] <= nums[i]) j--;
+    swap(nums, j, i);
+    reverse(nums, i + 1, n - 1); // swap and reverse the rest.
+}
+
+private void reverse(int[] a, int l, int r) {
+    while (l < r) {
+        swap(a, l, r);
+        l++;
+        r--;
+    }
+}
+
+private void swap(int[] arr, int a, int b) {
+    int temp = arr[a];
+    arr[a] = arr[b];
+    arr[b] = temp;
+}
+```
+
+## Q60 Permutation Sequence
+
+From this question, we learned about the factorial number system, it is similar to binary representation, but the the base is vary`(An = a * An-1 + b  b < An-1, n is the digit)`. 
+
+```java
+    public String getPermutation(int n, int k) {
+        int fac = 1;
+        List<Integer> l = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            fac *= i;
+            l.add(i);
+        }
+        StringBuilder sb = new StringBuilder();
+        k--;
+        for (int i = n - 1; i >= 0; i--) {
+            fac /= (i + 1);
+            int a = k / fac;
+            int b = k % fac;
+            sb.append(l.remove(a));
+            k = b;
+        }
+        return sb.toString();
+    }
+```
+
+
