@@ -1,5 +1,7 @@
 # Graph
 
+## Union Find
+
 ## Strongly Connected Component
 
 In directed Graph, the connectivity can be defined as
