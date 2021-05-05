@@ -83,6 +83,21 @@ There are three categories: creational patterns, behavior patterns, structural p
 ## Singleton
 
 Ensure that only one instance of a class is created, and provide a global point of access to the object. Usually singleton are used for centralized management of internal or external resource. Sometimes, it is costy to create such a instance, like SessionFactory in Hibernate.
+Recommend using static nested class and enum.
 
+### In JDK
+java.lang.Runtime is a singleton instance. It is in hungry mode.
 
+### Use Cases
+* Frequently created and destroyed object
+* Initialization of object cost a lot of resources (data source, session factory)
+* Utils objects
+
+## Factory Method
+
+### Simple Factory / Static Factory
+
+### Factory Method
+
+### Abstract Factory
 

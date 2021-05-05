@@ -103,3 +103,52 @@ public void inorder(TreeNode root) {
     }
 }
 ```
+
+## Q114 Flatten Binary Tree to Linked List
+
+### Preorder iterative traversal
+```java
+class Solution {
+    public void flatten(TreeNode root) {
+        List<TreeNode> list = new ArrayList<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode iter = root;
+        while (iter != null || !stack.isEmpty()) {
+            if (iter != null) {
+                stack.push(iter);
+                list.add(iter);
+                iter = iter.left;
+            } else {
+                iter = stack.pop().right;
+            }
+        }
+        for (int i = 0; i < list.size() - 1; i++) {
+            list.get(i).left = null;
+            list.get(i).right = list.get(i + 1);
+        }
+    }
+}
+```
+
+### Constant Space
+Look at the relationship between predecessor and successor.
+```java
+class Solution {
+    public void flatten(TreeNode root) {
+        TreeNode iter = root;
+        while (iter != null) {
+            if (iter.left != null) {
+                TreeNode temp = iter.left;
+                while (temp.right != null) {
+                    temp = temp.right;
+                }
+                temp.right = iter.right;
+                iter.right = iter.left;
+                iter.left = null;
+            } else
+                iter = iter.right;
+        }
+    }
+}
+```
+
