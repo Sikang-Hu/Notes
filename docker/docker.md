@@ -35,5 +35,6 @@ docker rmi -f $(docker images -qa)
 
 * docker top: check the running processing
 * docker inspect
-* docker exec
-* docker attach
+* docker exec: start a new terminal, and execute some command
+* docker attach: enter the 
+* 
