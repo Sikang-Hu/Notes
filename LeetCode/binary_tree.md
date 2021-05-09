@@ -152,3 +152,41 @@ class Solution {
 }
 ```
 
+## Q109 Convert Sorted List to Binary Search Tree
+
+### Sol 1: Recursion
+Main idea: find the mid to be root using the slow-fast pointers. Also use a **prev pointer** to dis connect the mid with the left tree. When we want to disconnect a direct edge, we can always use such prev pointer.
+
+### Sol 2: Convert List to Array
+Main idea: finding the mid is O(n), which makes the final implementation O(nlogn), so we can simplifies that by convert the list to an array. Then we can work with that array, on which finding the mid is O(1).
+
+### Sol 3: Simulate the inorder traversal
+Main idea: we don't explicitly find the mid point, we just simulate the inorder traversal, and we use the index of the mid point to give boundry to the subtree. We know that if we do the inorder traversal is just to iterate through the sorted list.
+
+```java
+class Solution {
+    ListNode iter;
+    public TreeNode sortedListToBST(ListNode head) {
+        iter = head;
+        int length = 0;
+        while(iter != null) {
+            iter = iter.next;
+            length++;
+        }
+        iter = head;
+        return help(0, length - 1);
+    }
+
+    private TreeNode help(int l, int r) {
+        if (r < l) return null;
+        TreeNode root = new TreeNode();
+        int mid = (l + r) / 2;
+        root.left = help(l, mid - 1);
+        root.val = iter.val;
+        iter = iter.next;
+        root.right = help(mid + 1, r);
+        return root;
+    }
+}
+```
+

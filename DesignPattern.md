@@ -101,3 +101,5 @@ java.lang.Runtime is a singleton instance. It is in hungry mode.
 
 ### Abstract Factory
 
+
+

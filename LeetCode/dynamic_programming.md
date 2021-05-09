@@ -1,5 +1,7 @@
 # Dynamic Programming
 
+## Longgest Common Substring
+
 ## Q312 Burst Ballon
 
 ## Q689 Maximum Sum of 3 Non-Overlapping Subarrays
@@ -57,3 +59,67 @@ After failed following cases:
 * \[0,2\] How to update
 * \[-1\] About the initial value and update, I pick 0 for nega, so Math.max(-1, nega * -1) = 0, led to a wrong answer.
 * \[7,-2,-4\] How to update the two variables to take the flipping into consideration
+
+
+## Q1494 Parallel Courses II
+2^n, n < 15 or 20
+### State compression Dynamic Programming
+```java
+int A,B; long C;
+int c;
+A |= 1 << c; // insert c (c = 0 ~ 31);
+A &= ~(1 << c) // erase c (c = 0 ~ 31); ~(1 << c) to obtain a set exclude c, and then & with A to remove c.
+A^= 1<< c // erase c if (A >> c & 1 == 1) A contains c
+a & (-a) // lowbit of A
+A = 0 // empty set
+A | B // union
+A & B // intersection
+int si = 15; // size of set
+int ALL = (1 << si) - 1;
+ALL ^ A // complementary set of A
+(A & B) == B // B is A's subset
+
+// enumerate the subset of ALL
+for (int i = 0; i <= ALL; i++) ;
+
+// enumerate a set A 
+for (int i = A; i != A; i = (i - 1) & A) ;
+
+// lowbit
+-a : ~a + 1
+01100100 -> 10011011 -> 10011100
+a&(-a) = 100
+
+//cnt
+private int count(x) {
+    int cnt = 0;
+    for (int i = 0; i < si; i++)
+        if (x&(1<<i)) cnt++;
+    return cnt;
+    // or
+    for (int i = x;i; i >>= 1)
+        cnt += i & 1;
+}
+
+
+// cnt[i]
+int[] cnt = new int[ALL];
+for (int i = 1; i < ALL - 1; i++) {
+    cnt[i] = cnt[i >> 1] + (cnt & 1);
+}
+
+// high bit
+private int highbit(int x) {
+    int p = lowBit(x);
+    while (p != x) {
+        x -= p;
+        p = lowBit(x);
+    }
+    return p;
+}
+
+private int isPowerOf2(int x) {
+    return x && x & (x - 1);
+}
+```
+

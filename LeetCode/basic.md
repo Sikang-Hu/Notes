@@ -344,7 +344,7 @@ class Solution {
 
 ### Iterative Impelementation 
 
-Use stack to convert recursion into iteration. The stack containing nodes are similar to the call stack in resursion. When finished construct left subtree, we will push another call into the stack. And we can intimate that explicitly in stack: when the next value is larger than a node's val but less than its parent's, we know that the next value must be the right child of this node. 
+Use stack to convert recursion into iteration. The stack containing nodes are similar to the call stack in resursion. When finished construct left subtree, we will push another call into the stack. And we can imitate that explicitly in stack: when the next value is larger than a node's val but less than its parent's, we know that the next value must be the right child of this node. 
 
 ```java
 public TreeNode bstFromPreorder(int[] preorder) {
