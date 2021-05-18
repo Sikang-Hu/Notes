@@ -211,4 +211,42 @@ From this question, we learned about the factorial number system, it is similar 
     }
 ```
 
+## 204 Count Primes
+
+Based on the Sieve of Eratosthenes, we mark all non-prime when we find a prime by marking all of its multiples. The bound of this iteration is the square root of n, since by that point we wil have considered all of the possible multiples of all the prime numbers below n.
+
+```java
+public int countPrimes(int n) {
+    boolean[] notPrime = new notPrime[n];
+    int count = 0;
+    int up = (int)Math.sqrt(n);
+    int i = 2;
+    for (; i <= up; i++) {
+        if (notPrime[i])
+            continue;
+        if (isPrime(i, notPrime))
+            count++;
+    }
+    for (; i < n; i++) {
+        if (!notPrime[i])
+            count++;
+    }
+    return count;
+}
+
+private boolean isPrime(int n, boolean[] notPrime) {
+    int up = (int)Math.sqrt(n);
+    for (int i = 2; i <= up; i++) {
+        if (n % i == 0) {
+            notPrime[n] = true;
+            return false;
+        }
+    }
+    for (long i = (long)n * n; i < notPrime.length; i += n) notPrime[(long)i] = true;
+    return true;
+}
+```
+
+
+
 

@@ -94,12 +94,39 @@ java.lang.Runtime is a singleton instance. It is in hungry mode.
 * Utils objects
 
 ## Factory Method
+* Createobjects without exposing the instantiation logic to the client.
+* Refer to the newly created object through a common interface.
+
+The Advantage is that when there is any new type added, there is no need to modify client code.
 
 ### Simple Factory / Static Factory
-
+```java
+public class ProductFactory{
+	public Product createProduct(String ProductID){
+		if (id==ID1)
+			return new OneProduct();
+		if (id==ID2) return
+			return new AnotherProduct();
+		... // so on for the other Ids
+		
+        return null; //if the id doesn't have any of the expected values
+    }
+    ...
+}
+```
+If we add a new concrete product, we should modify the Factory class, still violate OCP
 ### Factory Method
+Define an interface to create a object, but leaves the choice of its type to the subclasses.
 
 ### Abstract Factory
 
+## Prototype
+It allows an object to create customized objects without knowing their class or any details of how to create them.
+### Deep Copy
+* Override clone()
+* Serialization (recommended)
+
+## Builder
+Decoupling the product and the initialization of the product.
 
 

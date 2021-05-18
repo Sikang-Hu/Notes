@@ -27,6 +27,25 @@ We still need to take care of the duplicate elements: set strict less and non-st
 ## Related Question
 
 ### Q42 Trapping Rain Water
+The main idea is to maintain a decreasing stack when iterating through the array, the previous larger bar is the left bound and the next larger bar is the right bound. Every time we find the next larger, we can close a interval by add the rain water into the ret: `ret += distance * height`, where `height` is the minimum of left bound and right bound minus current height(lower water must have been added before).
+```java
+public int trap(int[] height) {
+    Deque<Integer> s = new ArrayDeque<>();
+    int ret = 0;
+    for (int i = 0; i < height.length; i++) {
+        while (!s.isEmpty() && height[i] > height[s.peek()]) {
+            // find the right bound(next larger in the descreasing stack)
+            int top = s.pop();
+            if (s.isEmpty()) break; // if there is no left bound, cannot trap rain
+            int dis = i - s.peek() - 1; // dis between left bound and right bound
+            int h = Math.min(height[i], height[s.peek()]) - height[top];
+            ret += dis * h;
+        }
+        s.push(i);
+    }
+    return ret;
+}
+```
 
 ### Q84 Largest Rectangle in Histogram
 
