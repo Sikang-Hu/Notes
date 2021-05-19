@@ -129,4 +129,13 @@ It allows an object to create customized objects without knowing their class or 
 ## Builder
 Decoupling the product and the initialization of the product.
 
+## Adapter
+
+## Bridge
+Seperate the Abstraction with the Implementaion, and assign separate inheritence tree for it.
+
+## Decorator
+
+java.io
+
 
