@@ -206,6 +206,9 @@ Also, all the nodes with non-zero degree should be in the same connected compone
 First of all, we have if a graph has a eulerian circuit, the circuit is also a eulerian path, which can also be found by the algorithm for Eulerian path. The complexity of this algorithm is $O(E)$.
 
 The main idea of Hierholzer is:
+
+the stepwise construction of the Eulerian cycle by connecting disjunctive circles:
+
 1. First check whether there is an Eulerian path by degree
 2. find the start node
 3. Begin from the start node to perform dfs: for each unused outgoing edge enter the destination node, after exhausted all outgoing edge, add current node to the beginning of the path
@@ -248,7 +251,7 @@ public List<String> findEulerianPath(List<List<String>> edges) {
     if (start.equals("")) start = temp; // There is a Eulerian circuit
     // DFS from start then
     dfs(start, graph, re);
-    if (re.size() == edges.size() + 1) return re;
+    if (re.size() ==  .size() + 1) return re;
     else return null; // Multiple Connected Components.
 }
 

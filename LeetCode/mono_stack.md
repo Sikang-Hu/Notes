@@ -12,7 +12,7 @@ The increasing stack will remove the peak, while decreasing stack will remove th
 
 ```java
 for (int i = 0; i < arr.size(); i++) {
-    while(!stack.empty() && arr[i] < stack.peek()) {
+    while(!stack.empty() && arr[i] < arr[stack.peek()]) { // usually we store the idx, 
         stack.pop(); 
         // do something with the popped value, while arr[i] is
         // the next less number of it.
@@ -107,5 +107,8 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 ```
 
 This problem can also solved by dynamic programming. Divide the array into segemnts of size k.
+
+### Q1856 Maximum Subarray Min-Product
+This is a interesting problem related to mono stack, though there is a trick to convert it to a mono-stack problem.
 
 

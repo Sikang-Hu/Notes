@@ -68,3 +68,11 @@ public void setZero(int[][] matrix) {
     }
 }
 ```
+
+## Q566 Reshape the Matrix
+
+This is a easy problem, but the key idea is that how to use division and modulus to map the index of a 2D matrix:
+
+Given a `m * n` matrix, it can be shaped to a `r * c` matrix, if `m * n = r * c`. We can think this by a auxilary 1D array. The element in M1 can be put into that array with `a[i * n + j] = m1[i][j]`(0-index). Then, we have `m2[i / c][i % c] = a[i]`. 
+
+
