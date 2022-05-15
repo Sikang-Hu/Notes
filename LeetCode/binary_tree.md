@@ -92,9 +92,9 @@ public void inorder(TreeNode root) {
                 predecessor.right = curr;
                 curr = curr.left;
             } else {
-                process(curr);
-                predecessor.right = null;
-                curr = curr.right;
+                process(curr); // leftside has been visited, process now
+                predecessor.right = null; // restore the tree
+                curr = curr.right; // go to the right
             }
         } else {
             process(curr);
@@ -142,8 +142,8 @@ class Solution {
                 while (temp.right != null) {
                     temp = temp.right;
                 }
-                temp.right = iter.right;
-                iter.right = iter.left;
+                temp.right = iter.right; // Its right child is the successor of the rightmost node of its left child.
+                iter.right = iter.left; // The successor must be its left child
                 iter.left = null;
             } else
                 iter = iter.right;
@@ -151,6 +151,44 @@ class Solution {
     }
 }
 ```
+
+### Comparison with Q897 Increasing Order Search Tree
+
+Different to Q114, this question requires a inorder traversal. The predecessor is the right most node of left subtree, but the succeessor is not simply its right child if there is no left child, but the leftmost node of its right child. Hence, if we still use the link strategy above, the tree will not be linked correctly, missing the case where a node's right child has left subtree. Instead, we can record the previous visted node and make current node as its successor.
+
+```java
+public TreeNode increasingBST(TreeNode root) {
+    TreeNode iter = root;
+    TreeNode dummy = new TreeNode();
+    TreeNode pre = dummy;
+    while (iter != null) {
+        if (iter.left != null) {
+            TreeNode it = iter.left;
+            while (it.right != null && it.right != iter) {
+                it = it.right;
+            }
+            if (it.right == null) {
+                it.right = iter;
+                iter = iter.left;
+            } else {
+                iter.left = null; // the iter will be moved in the next iteration
+            }
+        } else {
+            pre.right = iter;
+            pre = iter;
+            iter = iter.right;
+        }
+    }
+    return dummy.right;
+}
+```
+
+### Summary
+
+The core idea about morris is to find the relationship between predecessor and succesor.
+* For inorder, current node's predecessor is the rightmost node of its left subtree
+* For preorder, current node's right child's predecessor is the rightmost node of its left subtree
+
 
 ## Q109 Convert Sorted List to Binary Search Tree
 

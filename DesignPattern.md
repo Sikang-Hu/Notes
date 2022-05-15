@@ -138,4 +138,11 @@ Seperate the Abstraction with the Implementaion, and assign separate inheritence
 
 java.io
 
+## Strategy pattern
+
+Sometimes Classes differ only in their behavior, then it is a good idea to isolate the algorithms in separate classes in order to have the abulity to select different algorithms at runtime.
+
+## Chain of Responsible
+
+BaseHandler 
 

@@ -1,6 +1,6 @@
 # Binary Search
 
-Binary search is not just finding out the target in a sorted list(with random access), the core idea behind this algorithm is to utilize the order to halve the search space. Hence, the conditions for shrinking the search space is not limited to compare the target with the number at the middle, there are actually a lot of genralization.
+Binary search is not just finding out the target in a sorted list(with random access), the core idea behind this algorithm is to utilize the order to halve the search space. Hence, the conditions for shrinking the search space is not limited to compare the target with the number at the middle, there are actually a lot of generalizations.
 
 ## Variant of Standard BST
 
@@ -12,9 +12,9 @@ public int ceil(int[] arr, int target) {
     int lo = 0;
     int hi = arr.length - 1;
     while (lo < hi) {
-        int p = left + (right - left) / 2;
-        if (arr[p] < target) left = p + 1;
-        else right = p; 
+        int p = lo + (hi - lo) / 2;
+        if (arr[p] < target) lo = p + 1;
+        else hi = p; 
     }
     return arr[lo] < target ? arr.length : lo;
 }
@@ -26,13 +26,15 @@ public int floor(int[] arr, int target) {
     int lo = 0;
     int hi = arr.length - 1;
     while (lo < hi) {
-        int p = right - (right - left) / 2;
+        int p = hi - (hi - lo) / 2;
         if (arr[p] > target) right = p - 1;
         else left = p; 
     }
     return arr[hi] > target ? -1 : hi;
 }
 ```
+
+The reason why we choose the pivot in different way is to break the tie according to the condition. Image when you have only two element, choose a wrong pivot will get yourself stuck in the loop.
 
 ## Q33 Search in Rotated Sorted Array
 When rotated on the index 0, the array does not change.
