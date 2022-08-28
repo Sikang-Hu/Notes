@@ -228,3 +228,10 @@ class Solution {
 }
 ```
 
+## Q98 Validate Binary Search Tree
+
+This is not a hard one, but this key is to think from top to down. It seems like I used to think in a down-to-up pattern, i.e. the root collect information from children and then propagate the decision to its parent. But in this question, it is butter to pass the restriction to the children and collect the result directly.
+
+```java
+
+```

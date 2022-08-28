@@ -265,3 +265,46 @@ private void dfs(String node, Map<String, List<String>> graph, List<String> res)
 }
 ```
 
+## Bipartite graph
+
+The vertice can be partitioned into two subsets, `u` and `v`. There is no edge between two vertices in `u`, nor edge between two vertices in `v`.
+
+### Decide if a graph is bipartite graph
+
+Use bfs to color each vertice, if its color is same with its neighborhood, it is not bipartite.
+
+### 1820. Maximum Number of Accepted Invitations
+
+for each unmatched boy, we try to find an augment path to a unmatched girl.
+
+Complexity: O(m * m * n), m unmatched boy and dfs is O(mn) (in worst case every boy has an edge to a girl)
+
+
+```java
+class Solution {
+    public int maximumInvitations(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] match = new int[n];
+        Arrays.fill(match, -1);
+        int ret = 0;
+        for (int i = 0; i < m; i++) {
+            boolean[] seen = new boolean[n];
+            if (dfs(grid, i, seen, match)) ret++;
+        }
+        return ret;
+    }
+    
+    private boolean dfs(int[][] g, int boy, boolean[] seen, int[] match) {
+        for (int i = 0; i < g[boy].length; i++) {
+            if (g[boy][i] == 0 || seen[i]) continue;
+            seen[i] = true;
+            if (match[i] == -1 || dfs(g, match[i], seen, match)) {
+                match[i] = boy;
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
