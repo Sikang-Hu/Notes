@@ -25,6 +25,8 @@ public int nthUglyNumber(int n) {
 }
 ```
 
-# Q313 Super Ugly Number
+## Q313 Super Ugly Number
 
 The complexity of the heap solution is not `O(nlogk)`, it should be `O(knlog(k))`, the easy solution is just `O(kn)`, so just go with the easier one.
+
+## Q1201 Ugly Number III
