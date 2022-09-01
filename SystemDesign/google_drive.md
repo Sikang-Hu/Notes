@@ -109,4 +109,26 @@ The workflow is:
 
 ### Save storage space
 
+To support file version history and ensure reliability, multiversion of the same file are stored across multiple data center. Storage space can be filled up quickly. Three techniques are proposed to reduce storage costs.
+* De-duplicate data blocks: avoiding store redundant block by comparing the hash rate(then the content)
+* Optimized bakcup strategy
+  * Limit the number of versions to store, keep the most recent
+  * keep valuable version only. It is a waste to all the saved version for a heavily edit document in a short time
+* Move infrequently used data to cold storage. Amazon S3 glacier.
+
 ### Failure handling
+
+* Load balancer failure
+* Block server failure: if one failed others will pick up the unfinished job
+* Cloud storage failure
+* API server failure
+* Metadata cache failure
+* Metadata db failure
+* Notification service failure
+* Offline backup queue failure
+
+### blocker server vs direct upload
+
+Uploading directly is faster since there is only one upload, but its has drawback:
+* You have to implement the chunking, compression, encryption logic on client(different platform)
+* Implementing encrypting logic on the client side is not ideal
