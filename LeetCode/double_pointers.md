@@ -83,3 +83,29 @@ public int findDuplicate(int[] nums) {
     return slow;
 }
 ```
+
+## Q42 Trapping Rain Water
+
+The main is to fill each bin individually. For each bin, the water it can trapped is bounded by the smaller max height of its left and right. So, if there is a larger bar at one end(say right), all the water trapped can be decided by the max height of the bar at the other side(left). So, once we found the bar at one end is larger, we can iterate from the other end, and the water current position can trap will be decided by the max at the other end.
+
+
+```java
+public int trap(int[] height) {
+    int n = height.length;
+    int lmax = 0, rmax = 0;
+    int l = 0, r = n - 1;
+    int ret = 0;
+    while (l < r) {
+        if (height[l] < height[r]) { // this implies height[r] is no smaller than lmax
+            if (height[l] < lmax) ret += lmax - height[l];
+            else lmax = height[l];
+            l++;
+        } else {
+            if (height[r] < rmax) ret += rmax - height[r];
+            else rmax = height[r];
+            r--;
+        }
+    }
+    return ret;
+}
+```

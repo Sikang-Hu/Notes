@@ -11,7 +11,7 @@ Google drive is a **file storage** and **synchronization** service that help you
 
 It should support multi-device, multi-platform. It should support all file types. And the files should be encrypted. Besides, the system should also satisfying these non-functional requirements:
 * Reliability: data loss is unacceptable
-* Fast sync speed; reduce unnecessary network bandwidth(e.g. p2p download software)
+* Fast sync speed; reduce unnecessary network bandwidth(counter e.g. p2p download software)
 * Low bandwidth usage
 * Scalability
 * High availability: ability to provide service even some servers are offline, slow down.
@@ -51,7 +51,7 @@ path=<path to the file>
 First, to suffice the essential goal, we need
 * A web server processing request such as upload, download
 * A database persisting the metadata such as user data, file info, device info and so on.
-* A storage system storying the files. We can store the files in S3. S3 supports smae-region and cross-region replication, and redundant files are stored in multiple regions to guard against data loss and ensure availability.
+* A storage system storying the files. We can store the files in S3. S3 supports same-region and cross-region replication, and redundant files are stored in multiple regions to guard against data loss and ensure availability.
 
 Except that, we also need following componets:
 * Block servers: the client upload file to block server and it split the file into several blocks, each with a unique hash value, stored in metadata database. Each block is treated as an independent object and stored in S3. When download, the block server joined blocks to reconstruct a file. Dropbox set the max size of block to 4MB.
